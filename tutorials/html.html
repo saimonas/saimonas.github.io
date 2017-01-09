@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>HTML reference page</title>
+	</head>
+<body>
+	
+	
+
+	HTML cheat sheet<br>
+	<p>
+		A basic skeleton <br>
+		&lt;!DOCTYPE html&gt;<br>
+		&lt;head&gt;<br>
+		&emsp;&lt;title&gt;Page title&lt;/title&gt;<br>
+		&lt;html&gt;<br>
+		&lt;body&gt;<br>
+		&lt;/body&gt;<br>
+		&lt;/html&gt;<br>
+	</p>
+	<p>
+		opening bracket - &lt;html&gt;<br>
+		closing bracket - &lt;/html&gt;<br>
+		<br>
+		&lt;br&gt; or &lt;br /&gt; is a self-closing tag. Both formats are okay<br>
+		&lt;tagName attributeName=&apos;atributeValue&apos;&gt;Content&gt;/tagName&gt;<br>
+		<br>
+		Escape sequences for HTML symbol <br>
+		&lt; - &amp;lt;<br>
+		&gt; - &amp;gt;<br>
+		&amp; - &amp;amp;<br>
+		&apos; - &amp;apos;<br>
+		&quot; - &amp;quot;<br>
+		TAB - &amp;emsp;<br>
+	</p>
+	<p>
+		<em>&lt;em&gt;TEXT&lt;/em&gt;</em><br>
+		<strong>&lt;strong&gt;TEXT&lt;/strong&gt;</strong><br>
+		Linebreak - &lt;br&gt;<br>
+	</p>
+	<p>
+		<h1>&lt;h1&gt;HEADING&lt;h1&gt;</h1>
+		<h2>&lt;h2&gt;HEADING&lt;h2&gt;</h2>
+		<h3>&lt;h3&gt;HEADING&lt;h3&gt;</h3>
+		<h4>&lt;h4&gt;HEADING&lt;h4&gt;</h4>
+		<h5>&lt;h5&gt;HEADING&lt;h5&gt;</h5>
+		<h6>&lt;h6&gt;HEADING&lt;h6&gt;</h6>
+	</p>
+	<p>
+		Lists <br>
+		Ordered list <br>
+		&lt;ol&gt;
+		<ol>			
+			<li>&lt;li&gt;Item A&lt;/li&gt;</li>
+			<li>&lt;li&gt;Item B&lt;/li&gt;</li>
+		</ol>
+		&lt;/ol&gt;<br>
+		<br>
+		Unordered list <br>
+		&lt;ul&gt;
+		<ul>			
+			<li>&lt;li&gt;Item A&lt;/li&gt;</li>
+			<li>&lt;li&gt;Item B&lt;/li&gt;</li>
+		</ul>
+		&lt;/ul&gt;
+	</p>
+	<p>
+		Links <br>
+		<a href="html.html">&lt;a href="DESTINATION"&gt;TEXT&lt;/a&gt;</a>
+	</p>
+	<p>
+		Image <br>
+		&lt;img src="DESTINATION" width="INT" height="INT" alt="Text alternative"&gt;<br>
+		<img src="../images/mushroom.jpg" alt="MapleStory Orange Mushroom">
+	</p>
+	<p>
+		&lt;table&gt; <br>
+		&emsp;&lt;tr&gt; <br>
+		&emsp;&emsp;&lt;td&gt;Row 1, cell 1&lt;/td&gt;<br>
+		&emsp;&emsp;&lt;td&gt;Row 1, cell 2&lt;/td&gt;<br>
+		&emsp;&lt;/tr&gt; <br>
+
+		&emsp;&lt;tr&gt; <br>
+		&emsp;&emsp;&lt;td&gt;Row 2, cell 1&lt;/td&gt;<br>
+		&emsp;&emsp;&lt;td&gt;Row 2, cell 2&lt;/td&gt;<br>
+		&emsp;&lt;/tr&gt; <br>
+		&lt;/table&gt; <br>
+
+		<table>
+   			<tr>
+		        <td>|Row 1, cell 1|</td>
+		        <td>|Row 1, cell 2|</td>
+		    </tr>
+		    <tr>
+		        <td>|Row 2, cell 2|</td>
+		        <td>|Row 2, cell 1|</td>
+		    </tr>
+		</table>
+	</p>	
+	<p>
+		Forms <br>
+		get is used for shorter, non-sensitive information. Uses web adress <br>
+		post is used for longer, more secure submission. More or less invisible <br>
+		<form action=form.php method=get>&lt;form action="SCRIPT_NAME.php" method="post OR get"&gt;<br>
+			&emsp;&lt;input value=&quot;INITIAL TEXT&quot; name=fieldName&gt;<br>
+			&emsp;<input value="INITIAL TEXT"><br>
+			<br>
+			&emsp;&lt;input type=&quot;password&quot;&gt;<br>
+			&emsp;<input type="password"><br>
+			<br>
+			&emsp;&lt;input type=&quot;checkbox&quot; checked&gt;<br>
+			&emsp;<input type="checkbox" checked><br>
+			<br>
+			&emsp;&lt;input type=&quot;radio&quot; name=&quot;GROUP_NAME&quot; checked&gt;<br>
+			&emsp;&lt;input type=&quot;radio&quot; name=&quot;GROUP_NAME&quot;&gt;;<br>
+			&emsp;<input type="radio" name="group1" checked>
+				  <input type="radio" name="group1"><br>
+			<br>
+			&emsp;&lt;input type=&quot;submit&quot; value=&quot;BUTTON_TEXT&quot;&gt;<br>
+			&emsp;<input type="submit" value="BUTTON_TEXT"><br>
+			<br>
+			&emsp;&lt;textarea rows="NUMBER_OF_ROWS" cols=&quot;NUMBER_OF_COLUMNS&quot;&gt;INITIAL TEXT&lt;/textarea&lt;<br>
+			&emsp;<textarea rows="5" cols="20">Initial Text</textarea><br>
+			&emsp;&lt;select&gt;<br>
+			&emsp;&emsp;&lt;option&gt;Option 1&lt;/option&gt;<br>
+			&emsp;&emsp;&lt;option selected&gt;Option 2&lt;/option&gt;<br>
+			&emsp;&emsp;&lt;option value=&quot;Option 3&quot;&gt;Option 3&lt;/option&gt;<br>
+			&emsp;&lt;/select&gt;<br>
+			<select>
+			    <option>Option 1</option>
+			    <option selected>Option 2</option>
+			    <option value="3">Option 3</option>
+			</select><br>
+
+
+		&lt;/form&gt;</form>
+	</p>
+</body>
+</html>
