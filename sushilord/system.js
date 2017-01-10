@@ -25,8 +25,8 @@ var Engine = { //the main Engine object
 		}
 	},
 	Images: [
-		{name: "click area", File: "img/sushi.png", x: 20, y: 80, width: 130, height: 130, Image: new Image() },
-		{name: "sell area", File: "img/money.png", x: 20, y: 200, width: 130, height: 130, Image: new Image() }
+		{name: "click area", File: "img/sushi.png", x: 20, y: 80, width: 130, height: 130, Image: new Image(), sizei: "normal", tooltipText: "Press me for sushi!" },
+		{name: "sell area", File: "img/money.png", x: 20, y: 200, width: 130, height: 130, Image: new Image(), sizei: "normal", tooltipText: "I, on the other hand, am more sophistacated, and thus required a significantly longer tooltip. You are welcome to read. Here it goes: press me to sell sushi!" }
 	],
 
 	Timers: {
@@ -47,6 +47,8 @@ var Engine = { //the main Engine object
 			text: "Reset"
 		}
 	},
+
+	InteractablesList: [],
 
 	Upgrades: [
 		{
@@ -72,6 +74,8 @@ var Engine = { //the main Engine object
 			isBought: false}
 	],
 
+	UpgradeButtons: [],
+
 	Workers: [
 		{
 			name: "Novice panda", 
@@ -90,6 +94,19 @@ var Engine = { //the main Engine object
 			color: "grey",
 			isBought: false}
 	],
+
+	Tooltip:{
+		isEnabled: false,
+		x: null,
+		y: null,
+		width: null,
+		height: null,
+		text: null,
+		interactable: null,
+		timeAlive: null,
+		lastUpdate: null,
+		maxWidth: 100
+	},
 
 	BuySharpKnife: function(){
 		var item = Engine.Upgrades[0];
@@ -165,6 +182,7 @@ var Engine = { //the main Engine object
 		Engine.LoadImages();
 		Engine.SetConstants();
 
+		Engine.RegisterButtons();
 		Engine.AddClick();
 		Engine.Autosave();
 		Engine.StartIncrement();
@@ -177,6 +195,10 @@ var Engine = { //the main Engine object
 	SetConstants: function(){
 		Engine.Elements.Worker.x = Engine.Elements.Upgrade.x + Engine.Elements.Upgrade.width + 10;
 	},
+
+	RegisterButtons: function(){
+		
+	}
 
 	Save: function() { //save function
 		window.localStorage.setItem("sushilord-info", JSON.stringify(Engine.Info)); //set localstorage for engine info
@@ -219,6 +241,7 @@ var Engine = { //the main Engine object
 	LoadImages: function() { //this is where our logic gets updated
 		for (var i = 0; i < Engine.Images.length; i++) { 
     		Engine.Images[i].Image.src = Engine.Images[i].File;
+    		Engine.InteractablesList.push(Engine.Images[i]);
 		}
 
 		// Engine.Images.ClickArea.Image.src = Engine.Images.ClickArea.File;
@@ -275,6 +298,9 @@ var Engine = { //the main Engine object
 			Engine.CheckUpgrades(mouse, "up");
 			Engine.CheckWorkers(mouse, "up");
 			Engine.CheckReset(mouse);	
+		});
+		$(Engine.Canvas).on('mousemove', function(mouse) {
+			Engine.HandleHovering(mouse);
 		});
 	},
 
@@ -361,6 +387,39 @@ var Engine = { //the main Engine object
 		// }
 	},
 
+	LastHover: null,
+	canDrawTooltip: false,
+
+	HandleHovering: function(mouse){
+		for (var i = 0; i < Engine.InteractablesList.length; i++) {
+			var interactable = Engine.InteractablesList[i];
+			isMouseOnInteractable = Engine.isOnMouse(mouse, interactable.x, interactable.x + interactable.width, interactable.y, interactable.y + interactable.height);
+			if(isMouseOnInteractable){
+				Engine.Tooltip.interactable = interactable;
+				Engine.Tooltip.x = mouse.pageX;
+				Engine.Tooltip.y = mouse.pageY;
+
+				if(interactable.sizei !== "normal"){
+					return;
+				}
+				Engine.NormalizeLastHover();
+				Engine.resize(interactable, 0, -4, 8, 8)
+				interactable.sizei = "big";
+				Engine.LastHover = interactable;				
+				return;
+			}
+		}
+		Engine.NormalizeLastHover();
+		Engine.Tooltip.interactable = null;
+	},
+
+	NormalizeLastHover: function(){
+		if(Engine.LastHover != undefined){
+				Engine.resize(Engine.LastHover, 0, 4, -8, -8);
+				Engine.LastHover.sizei = "normal";
+				Engine.LastHover = null;
+			}
+	},
 
 	UpgradeMap: function(id){
 		switch(id){
@@ -397,9 +456,32 @@ var Engine = { //the main Engine object
 	
 	/** animation routines **/
 	Update: function() { //this is where our logic gets updated
+		Engine.CheckTooltip();
 		Engine.Draw();
 		
 	},
+
+	CheckTooltip: function(){
+		Engine.Tooltip.isEnabled = false;
+		if(Engine.Tooltip.interactable === null){
+			Engine.Tooltip.timeAlive = null;
+			return;
+		}
+		if(Engine.Tooltip.timeAlive === null){
+			Engine.Tooltip.timeAlive = 0;
+			Engine.Tooltip.lastUpdate = Date.now();
+		}
+		else{
+			var currentTime = Date.now();
+			Engine.Tooltip.timeAlive += currentTime - Engine.Tooltip.lastUpdate;
+			Engine.Tooltip.lastUpdate = currentTime;
+		}
+		if(Engine.Tooltip.timeAlive > 500){
+			Engine.Tooltip.isEnabled = true;
+		}
+
+	},
+
 	Draw: function() { //this is where we will draw all the information for the game!
 		Engine.Canvas.Context.clearRect(0,0,Engine.Canvas.width,Engine.Canvas.height); //clear the frame
 
@@ -408,6 +490,8 @@ var Engine = { //the main Engine object
 		Engine.DrawUpgrades();
 		Engine.DrawWorkers();
 		Engine.DrawReset();
+
+		Engine.DrawTooltip();
 		
 		Engine.GameLoop(); //re-iterate back to gameloop
 	},
@@ -470,6 +554,80 @@ var Engine = { //the main Engine object
 	DrawReset: function(){
 		var btn = Engine.Elements.Reset;
 		Engine.DrawTextBox("X", btn.x, btn.y, btn.width, btn.height, btn.color, "yellow");
+	},
+
+	DrawTooltip: function(){
+		if(!Engine.Tooltip.isEnabled){return}
+
+		var tooltipTextLines = GetLinesFromText(Engine.Tooltip.interactable.tooltipText);
+		var tooltipWidth = Math.max((20 + 8.5 * tooltipTextLines[0].length), 50);
+		var tooltipHeigth = 20 + tooltipTextLines.length * 20;
+		DrawTooltipBorder(tooltipWidth, tooltipHeigth);
+		FillTooltip(tooltipWidth, tooltipHeigth);
+		WriteTooltipText();
+
+		function GetLinesFromText(sourceText){
+			
+			var lines = [];
+			var line = "";
+			var lineLength = 0;
+
+			for(var i = 0; i < sourceText.length; i++){
+				line += sourceText[i];
+				lineLength++;
+
+				if(lineLength > 20){
+					lines.push(line);
+					line = "";
+					lineLength = 0;
+				}
+			}
+			if(lineLength > 0){
+				lines.push(line);
+			}
+
+			return lines;
+		}
+
+
+
+		function DrawTooltipBorder(width, height){
+			Engine.Canvas.Context.fillStyle = "black";
+			Engine.Canvas.Context.strokeRect(Engine.Tooltip.x, Engine.Tooltip.y, width, height);
+		}
+
+		function FillTooltip(width, height){
+			Engine.Tooltip.width = 200;
+			Engine.Canvas.Context.fillStyle = "white";
+			Engine.Canvas.Context.globalAlpha = 0.4;
+			Engine.Canvas.Context.fillRect(Engine.Tooltip.x, Engine.Tooltip.y, width, height);
+			Engine.Canvas.Context.globalAlpha = 1;
+		}
+
+		function WriteTooltipText(){
+			Engine.Canvas.Context.fillStyle = "black";
+			Engine.Canvas.Context.font = "18px arial";
+
+
+			var source = Engine.Tooltip.interactable.tooltipText;
+			var lines = GetLinesFromText(source)
+			var line = Engine.Tooltip.interactable.tooltipText;
+			var numOfLines = 10;
+					
+			for(var i = 0; i < lines.length; i++){
+				line = lines[i];
+				Engine.Canvas.Context.fillText(line, Engine.Tooltip.x + 10, Engine.Tooltip.y + 20 + (20 * i));
+			}
+
+		}
+
+		
+		
+
+
+
+
+
 	},
 
 	DrawItem: function(item){
