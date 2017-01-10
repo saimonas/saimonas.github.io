@@ -25,8 +25,35 @@ var Engine = { //the main Engine object
 		}
 	},
 	Images: [
-		{name: "click area", File: "img/sushi.png", x: 20, y: 80, width: 130, height: 130, Image: new Image(), sizei: "normal", tooltipText: "Press me for sushi!" },
-		{name: "sell area", File: "img/money.png", x: 20, y: 200, width: 130, height: 130, Image: new Image(), sizei: "normal", tooltipText: "I, on the other hand, am more sophistacated, and thus required a significantly longer tooltip. You are welcome to read. Here it goes: press me to sell sushi!" }
+		{
+			type: "image",
+			name: "click area",
+			File: "img/sushi.png",
+			x: 20,
+			y: 80,
+			width: 130,
+			height: 130,
+			Image: new Image(),
+			interactable: {
+			 	sizei: "normal",
+			  	tooltipText:"Press me for sushi!"
+			}
+		},
+		{
+			type: "image",
+			name: "sell area",
+			File: "img/money.png",
+			x: 20,
+			y: 200,
+			width: 130,
+			height: 130,
+			Image: new Image(),
+			interactable:
+			{
+				sizei: "normal",
+				tooltipText: "I, on the other hand, am more sophistacated, and thus required a significantly longer tooltip. You are welcome to read. Here it goes: press me to sell sushi!"
+			}
+		}
 	],
 
 	Timers: {
@@ -75,6 +102,42 @@ var Engine = { //the main Engine object
 	],
 
 	UpgradeButtons: [],
+	WorkerButtons: [],
+
+	Layout:{
+		upgradeStartingX: 250,
+		upgradeStartingY: 5,
+		upgradeWidth: 200,
+		upgradeHeight: 25,
+		gapBetweenUpgrades: 1,
+
+		workerStartingX: 460,
+		workerStartingY: 5,
+		workerWidth: 200,
+		workerHeight: 25,
+		gapBetweenWorkers: 1,
+
+		resizeMap: {
+			"image": {
+				xOffset: 0,
+				yOffset: -4,
+				widthOffset: 8,
+				heightOffset: 8
+			},
+			"upgrade": {
+				xOffset: 0,
+				yOffset: 0,
+				widthOffset: -1,
+				heightOffset: -1,
+			},
+			"worker": {
+				xOffset: 0,
+				yOffset: 0,
+				widthOffset: -1,
+				heightOffset: -1,
+			}
+		}
+	},
 
 	Workers: [
 		{
@@ -196,9 +259,85 @@ var Engine = { //the main Engine object
 		Engine.Elements.Worker.x = Engine.Elements.Upgrade.x + Engine.Elements.Upgrade.width + 10;
 	},
 
+	// DrawUpgrades: function(){
+	// 	for (var i = 0; i < Engine.Upgrades.length; i++){
+	// 		// dimensions
+	// 		var dims = Engine.Elements.Upgrade;
+	// 		var upgrade = Engine.Upgrades[i];
+	// 		var text = upgrade.name + " - $" + upgrade.price;
+	// 		var textColor = "white";
+	// 		var boxColor = upgrade.color;
+
+	// 		if(upgrade.isBought){
+	// 			boxColor = "limegreen";
+	// 		}else if(upgrade.price <= Engine.Player.Money){
+	// 			textColor = "chartreuse";
+	// 		}
+			
+	// 		Engine.DrawTextBox(text, dims.x, dims.y + dims.height + i * 27, dims.width, dims.height, boxColor, textColor);
+	// 	}
+	// },
+
+
+	// DrawWorkers: function(){
+	// 	for (var i = 0; i < Engine.Workers.length; i++){			
+	// 		var dims = Engine.Elements.Worker;
+	// 		var worker = Engine.Workers[i];
+	// 		var count = "";
+	// 		if(worker.count > 0){
+	// 			count = worker.count + " x ";
+	// 		}
+	// 		var text = count + worker.name + " - $" + worker.price;
+	// 		var textColor = "white";
+	// 		if (worker.price <= Engine.Player.Money){
+	// 			textColor = "chartreuse";
+	// 		}
+	// 		Engine.DrawTextBox(text, dims.x, dims.y + dims.height + i * 27, dims.width, dims.height, worker.color, textColor);
+	// 	}
+	// },
+
 	RegisterButtons: function(){
-		
+		for(var i = 0; i < Engine.Upgrades.length; i++){
+			var gameElement = {
+				type: "upgrade",
+				x: Engine.Layout.upgradeStartingX,
+				y: Engine.Layout.upgradeStartingY + i * (Engine.Layout.gapBetweenUpgrades + Engine.Layout.upgradeHeight),
+				width: Engine.Layout.upgradeWidth,
+				height: Engine.Layout.upgradeHeight,
+				upgrade: Engine.Upgrades[i],
+				interactable: {
+					sizei: "normal",
+					tooltipText: Engine.Upgrades[i].flavor
+				}
+			}
+			Engine.UpgradeButtons.push(gameElement);
+			Engine.InteractablesList.push(gameElement);
+		}
+		for(var i = 0; i < Engine.Workers.length; i++){
+			var gameElement = {
+				type: "worker",
+				x: Engine.Layout.workerStartingX,
+				y: Engine.Layout.workerStartingY + i * (Engine.Layout.gapBetweenWorkers + Engine.Layout.workerHeight),
+				width: Engine.Layout.workerWidth,
+				height: Engine.Layout.workerHeight,
+				worker: Engine.Workers[i],
+				interactable: {
+					sizei: "normal",
+					tooltipText: Engine.Workers[i].flavor
+				}
+			}
+			Engine.WorkerButtons.push(gameElement);
+			Engine.InteractablesList.push(gameElement);
+		}
+
 	},
+
+			// 	name: "Sharp knife",
+			// effect: "+1 to sushi per click",
+			// flavor: "The sharper the knife, the more effectively you work.",
+			// price: 20,
+			// color: "grey",
+			// isBought: false},
 
 	Save: function() { //save function
 		window.localStorage.setItem("sushilord-info", JSON.stringify(Engine.Info)); //set localstorage for engine info
@@ -392,9 +531,11 @@ var Engine = { //the main Engine object
 
 	HandleHovering: function(mouse){
 		for (var i = 0; i < Engine.InteractablesList.length; i++) {
-			var interactable = Engine.InteractablesList[i];
-			isMouseOnInteractable = Engine.isOnMouse(mouse, interactable.x, interactable.x + interactable.width, interactable.y, interactable.y + interactable.height);
+			var object = Engine.InteractablesList[i];
+			var interactable = object.interactable;
+			isMouseOnInteractable = Engine.isOnMouse(mouse, object.x, object.x + object.width, object.y, object.y + object.height);
 			if(isMouseOnInteractable){
+				//console.log("Mouse x: " + mouse.pageX + " y: " + mouse.pageY + " entered on object between  x1:" + object.x + " x2: " + (object.x + object.width) + " y1: " + y)
 				Engine.Tooltip.interactable = interactable;
 				Engine.Tooltip.x = mouse.pageX;
 				Engine.Tooltip.y = mouse.pageY;
@@ -403,9 +544,10 @@ var Engine = { //the main Engine object
 					return;
 				}
 				Engine.NormalizeLastHover();
-				Engine.resize(interactable, 0, -4, 8, 8)
+				//Engine.resize(object, 0, -4, 8, 8)
+				Engine.Enlarge(object);
 				interactable.sizei = "big";
-				Engine.LastHover = interactable;				
+				Engine.LastHover = object;				
 				return;
 			}
 		}
@@ -415,8 +557,9 @@ var Engine = { //the main Engine object
 
 	NormalizeLastHover: function(){
 		if(Engine.LastHover != undefined){
-				Engine.resize(Engine.LastHover, 0, 4, -8, -8);
-				Engine.LastHover.sizei = "normal";
+				//Engine.resize(Engine.LastHover, 0, 4, -8, -8);
+				Engine.Compress(Engine.LastHover);
+				Engine.LastHover.interactable.sizei = "normal";
 				Engine.LastHover = null;
 			}
 	},
@@ -446,11 +589,28 @@ var Engine = { //the main Engine object
 		}
 	},
 
-	resize: function(item, xOffset, yOffset, widthOffset, heightOffset) {
-		item.x += xOffset;
-		item.y += yOffset;
-		item.width += widthOffset;
-		item.height += heightOffset;
+	Enlarge: function(element){
+		var offsets = Engine.Layout.resizeMap[element.type];
+		if(offsets === undefined) {return;}
+
+		Engine.resize(element, offsets.xOffset, offsets.yOffset, offsets.widthOffset, offsets.heightOffset)
+
+	},
+
+	Compress: function(element){
+		var offsets = Engine.Layout.resizeMap[element.type];
+		if(offsets === undefined) {return;}
+
+		Engine.resize(element, -offsets.xOffset, -offsets.yOffset, -offsets.widthOffset, -offsets.heightOffset)
+
+	},
+
+	resize: function(element, xOffset, yOffset, widthOffset, heightOffset) {
+		
+		element.x += xOffset;
+		element.y += yOffset;
+		element.width += widthOffset;
+		element.height += heightOffset;
 	},
 
 	
@@ -514,7 +674,7 @@ var Engine = { //the main Engine object
 
 	},
 
-	DrawUpgrades: function(){
+	DrawUpgrades1: function(){
 		for (var i = 0; i < Engine.Upgrades.length; i++){
 			// dimensions
 			var dims = Engine.Elements.Upgrade;
@@ -533,8 +693,65 @@ var Engine = { //the main Engine object
 		}
 	},
 
+	DrawUpgrades: function(){
+		for(var i = 0; i < Engine.UpgradeButtons.length; i++){
+			var upgrade = Engine.UpgradeButtons[i];
+			var textColor = "white";
+			if(Engine.Player.Money >= upgrade.upgrade.price){
+				textColor = "chartreuse";
+			}
+
+			var backgroundColor = "grey";
+			if(upgrade.upgrade.isBought){
+				backgroundColor = "green";
+			}
+
+			var text = upgrade.upgrade.name;
+			if(!upgrade.upgrade.isBought){
+				text += " - $" + upgrade.upgrade.price;
+			}
+
+
+
+			Engine.DrawTextBox(text, upgrade.x, upgrade.y, upgrade.width, upgrade.height, backgroundColor, textColor);
+			
+
+
+
+		}
+	},
 
 	DrawWorkers: function(){
+		for(var i = 0; i < Engine.WorkerButtons.length; i++){
+			var worker = Engine.WorkerButtons[i];
+
+			var backgroundColor = "grey";
+
+			var textColor = "white";
+			if(Engine.Player.Money >= worker.worker.price ){
+				textColor = "chartreuse";
+			}
+
+			var text = worker.worker.name + " - $" + worker.worker.price;
+			if(worker.worker.count > 0){
+				text = worker.worker.count + " x " + text;
+			}
+
+			Engine.DrawTextBox(text, worker.x, worker.y, worker.width, worker.height, backgroundColor, textColor);
+
+		}
+	},
+
+			// {
+			// name: "Cashier",
+			// effect: "+1 to automatic selling",
+			// flavor:	"Not all cashiers must be pandas",
+			// price: 25,
+			// count: 0,
+			// color: "grey",
+			// isBought: false}
+
+	DrawWorkers1: function(){
 		for (var i = 0; i < Engine.Workers.length; i++){			
 			var dims = Engine.Elements.Worker;
 			var worker = Engine.Workers[i];
@@ -599,7 +816,7 @@ var Engine = { //the main Engine object
 		function FillTooltip(width, height){
 			Engine.Tooltip.width = 200;
 			Engine.Canvas.Context.fillStyle = "white";
-			Engine.Canvas.Context.globalAlpha = 0.4;
+			Engine.Canvas.Context.globalAlpha = 0.75;
 			Engine.Canvas.Context.fillRect(Engine.Tooltip.x, Engine.Tooltip.y, width, height);
 			Engine.Canvas.Context.globalAlpha = 1;
 		}
@@ -634,19 +851,33 @@ var Engine = { //the main Engine object
 		Engine.Canvas.Context.drawImage(item.Image, item.x, item.y, item.width, item.height);
 	},
 
-	DrawTextBox: function(text, x, y, width, height, boxColor, textColor){
+	DrawTextBox1: function(text, x, y, width, height, boxColor, textColor){
 		Engine.Canvas.Context.fillStyle = boxColor;
-		Engine.Canvas.Context.fillRect(x, y - height, width, height * 1.25);
+		Engine.Canvas.Context.fillRect(x, y, width, height);
 		Engine.Canvas.Context.fillStyle = textColor;
 		Engine.Canvas.Context.font = height + "px arial";
 		Engine.Canvas.Context.fillText(text, x, y);
 
 	},
 
+	DrawTextBox: function(text, x, y, width, height, boxColor, textColor, textSize){
+		if(textSize === undefined){
+			textSize = height - 6;
+		}
+		Engine.Canvas.Context.fillStyle = boxColor;
+		Engine.Canvas.Context.fillRect(x, y, width, height);
+		Engine.Canvas.Context.fillStyle = textColor;
+		Engine.Canvas.Context.font = textSize + "px arial";
+		var verticalBoxCenterForText = y + Engine.Layout.upgradeHeight - 6;
+		Engine.Canvas.Context.fillText(text, x + 3, verticalBoxCenterForText);
+
+
+	},
+
 	GameLoop: function() { //the gameloop function
 		Engine.GameRunning = setTimeout(function() { 
 			requestAnimFrame(Engine.Update, Engine.Canvas); 
-		}, 10);
+		}, 16);
 	},
 	
 	/** drawing routines **/
