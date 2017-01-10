@@ -198,7 +198,7 @@ var Engine = { //the main Engine object
 
 	RegisterButtons: function(){
 		
-	}
+	},
 
 	Save: function() { //save function
 		window.localStorage.setItem("sushilord-info", JSON.stringify(Engine.Info)); //set localstorage for engine info
