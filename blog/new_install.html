@@ -19,5 +19,40 @@ launch_at_startup = yes</pre></p>
 	<H1>Software</H1>
 	<a href="https://www.revouninstaller.com/revo_uninstaller_free_download.html">Revo Uninstaller Free</a><br>
 	<a href="https://www.voidtools.com/">Search Everything</a>
+	<H1>Keyboard</H1>
+	<pre>// usr/share/X11/xkb/symbols/langcode
+//sudo udevadm trigger --subsystem-match=input --action=change
+
+
+// based on a keyboard map from an 'xkb/symbols/se' file
+default  partial alphanumeric_keys
+xkb_symbols "basic" {
+    include "latin(type2)"
+    include "se(se)"
+};
+
+partial alphanumeric_keys
+xkb_symbols "se" {
+
+    name[Group1]="Swedish";
+
+    key <TLDE>  { [   grave,    asciitilde,    paragraph, threequarters] };
+    key <AE04>  { [         4,     dollar                            ] };
+    key <AE05>  { [         5,    percent,     EuroSign,         cent ] };    
+    key <AE06>  { [         6,    ampersand,     asciicircum,         9 ] };    
+    key <AE11>  { [      plus,   question,    backslash, questiondown ] };    
+    key <AE12>  { [equal, bracketleft,    braceleft,      notsign ] };        
+    key <AD12>  { [asterisk,    bracketright, braceright               ] };    
+    key <BKSL>  { [apostrophe,   asciicircum,        a,     multiply ] };    
+    key <AC10>  { [odiaeresis, Odiaeresis,       oslash,     Ooblique ] };    
+    key <AC11>  { [adiaeresis, Adiaeresis,           ae,           AE ] };    
+    key <AB08>  { [comma, semicolon,           less,           AE ] };    
+    key <AB09>  { [period, colon,           greater,           AE ] };    
+    key <AB10>  { [dash, underscore,           bar,           AE ] };    
+    key <SPCE>  { [     space,      space,        space, nobreakspace ] };    
+    key <LSGT>  { [      less,     greater,         bar,    brokenbar ] }; 
+
+    include "kpdl(comma)"    include "level3(ralt_switch)"
+};</pre>
 </body>
 </html>
